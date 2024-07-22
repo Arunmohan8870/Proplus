@@ -175,6 +175,8 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
         toast.success("Category Added Successfully");
       })
       .catch((error) => {
+        toast.error(error.data.message);
+        setCategories("");
         console.error(error);
       });
   };
@@ -226,6 +228,9 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
         toast.success("Product Assigned Successfully");
       })
       .catch((error) => {
+        toast.error(error.data.message);
+        setAssignDate("");
+        setSelectedAssignProduct(null);
         console.error(error);
       });
   };
