@@ -971,6 +971,91 @@ const handleChangeRowsPerPage = (event) => {
                     >
                       Assign
                     </Button>
+                    <Dialog
+                sx={{
+                  "& .MuiDialog-paper": {
+                    borderRadius: "20px",
+                    padding: 2,
+                    position: "relative",
+                  },
+                }}
+                fullWidth
+                open={openAssign === device._id}
+                onClose={handleClose}
+              >
+                <DialogContent>
+                  <Paper sx={{ padding: 5 }}>
+                  <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>
+                    <Typography
+                      sx={{
+                        paddingBottom: 2,
+                        fontWeight: "700",
+                        color: "#2596be",
+                      }}
+                      variant="h5"
+                      gutterBottom
+                    >
+                      Assign
+                    </Typography>
+
+                    <form onSubmit={handleAssignProduct}>
+                      <FormControl variant="filled" fullWidth sx={{ mb: 2 }}>
+                        <InputLabel>Add Employee</InputLabel>
+                        <Select
+                          value={selectedAssignProduct}
+                          onChange={handleChangeAssignProduct}
+                          fullWidth
+                          required
+                        >
+                          {allNewEmployee.map((posList) => (
+                            <MenuItem key={posList._id} value={posList._id}>
+                              {posList.employeeName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                      <TextField
+                        // placeholder="Assign Date"
+                        value={AssignDate}
+                        label="Assign Date"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) => setAssignDate(e.target.value)}
+                        fullWidth
+                        type="date"
+                        required
+                        sx={{
+                          mb: 2,
+                          // padding: "10px 15px",
+                          // border: "1px solid #ccc",
+                          // borderRadius: "4px",
+                          "&::placeholder": {
+                            color: "#999",
+                          },
+                          "&:focus": {
+                            borderColor: "#3f51b5",
+                            outline: "none",
+                          },
+                        }}
+                      />
+                      <Button
+                        type="submit"
+                        color="primary"
+                        variant="contained"
+                        aria-label="add Devices"
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mt: 2,
+                        }}
+                      >
+                        <AddIcon />
+                        Add
+                      </Button>
+                    </form>
+                  </Paper>
+                </DialogContent>
+              </Dialog>
                   </TableCell>
                   <Dialog
                     sx={{

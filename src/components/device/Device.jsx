@@ -72,7 +72,7 @@ const Device = () => {
 
   
   const [searchProduct, setSearchProduct] = useState();
-  const [searchText, setSearchText] = useState();
+  const [searchText, setSearchText] = useState("");
   const [openView, setOpenView] = useState(false);
   const [editReturn, setEditReturn] = useState(false);
   const [returnDate, setReturnDate] = useState(false);
@@ -1064,7 +1064,7 @@ const Device = () => {
                 variant="h5"
                 gutterBottom
               >
-                Add Employeeeee
+                Add Employee
               </Typography>
               <form onSubmit={handleSubmitEdit}>
                 <Input
@@ -1129,8 +1129,10 @@ const Device = () => {
                     },
                   }}
                 />
-                <Input
-                  placeholder="Date Of Birth"
+                <TextField
+                  //placeholder="Date Of Birth"
+                  label={"Date Of Birth"}
+                  InputLabelProps={{ shrink: true }}
                   value={dateOf}
                   onChange={(e) => setDateOf(e.target.value)}
                   fullWidth
@@ -1138,9 +1140,9 @@ const Device = () => {
                   required
                   sx={{
                     mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
+                    // padding: "10px 15px",
+                    // border: "1px solid #ccc",
+                    // borderRadius: "4px",
                     "&::placeholder": {
                       color: "#999",
                     },
@@ -1150,7 +1152,7 @@ const Device = () => {
                     },
                   }}
                 />
-                <Input
+                <TextField
               
                   label={"Date Of Joining"}
                   value={dateOfJoin}
@@ -1160,10 +1162,10 @@ const Device = () => {
                   type="date"
                   required
                   sx={{
-                    mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
+                     mb: 2,
+                    // padding: "10px 15px",
+                    // border: "1px solid #ccc",
+                    // borderRadius: "4px",
                     "&::placeholder": {
                       color: "#999",
                     },
@@ -1617,7 +1619,7 @@ const Device = () => {
               variant="h5"
               gutterBottom
             >
-              {`Not found "${searchText}"`}
+              {`Not found`}
             </Typography>
           )}
         </Box>

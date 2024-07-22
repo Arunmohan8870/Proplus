@@ -37,12 +37,12 @@ const Sidebar = () => {
           <Link to="/product">Product Details</Link>
        </Menu.Item>
 
-       <Menu.Item
+       {/* <Menu.Item
           key="3"
           icon={<CarryOutOutlined style={{ fontSize: "18px" }} />}
         >
           <Link to="/profile">Profile Info</Link>
-        </Menu.Item>
+        </Menu.Item> */}
 
          {/* <Menu.Item
           key="4"
@@ -56,12 +56,12 @@ const Sidebar = () => {
         >
           <Link to="/settings">Settings</Link>
         </Menu.Item>*/}
-        <Menu.Item
+        {/* <Menu.Item
           key="6"
           icon={<LoginOutlined style={{ fontSize: "18px" }} />}
         >
           Logout
-        </Menu.Item> 
+        </Menu.Item>  */}
       </Menu>
     </>
   );
