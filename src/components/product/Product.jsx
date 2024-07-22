@@ -296,11 +296,20 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
         setRom("");
         setBuyDate("");
         setProductName("");
+        setSelectedCategories(null)
+        setGen("");
 
         setOpenProduct(false);
         toast.success("Product Added Successfully");
       })
       .catch((error) => {
+        toast.error(error.data.message);
+        setRam("");
+        setRom("");
+        setBuyDate("");
+        setProductName("");
+        setSelectedCategories(null)
+        setGen("");
         console.error(error);
       });
   };
@@ -333,6 +342,7 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
     setEditReturn(id);
     setProductReturnId(id);
     console.log(produrtReturnId, "testtsttt");
+
   };
 
   useEffect(() => {
