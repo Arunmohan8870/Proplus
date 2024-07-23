@@ -193,3 +193,8 @@
     background: #fff;
 
   }
+
+.bg{
+  background: linear-gradient(45deg, white, #084c61);
+  
+}

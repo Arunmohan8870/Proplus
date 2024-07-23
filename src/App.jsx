@@ -103,7 +103,7 @@ const App = () => {
             </Sider>
           )}
           <Layout>
-            <Content style={{ backgroundColor: "#f7f7f7", padding: "24px" }}>
+            <Content style={{ padding: "24px" }} className="bg">
               <Routes>
                 <Route
                   path="/login"

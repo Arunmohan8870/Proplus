@@ -53,7 +53,7 @@ const Login = ({ setIsLoggedIn }) => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            backgroundColor: "#f0f2f5",
+            //backgroundColor: "#f0f2f5",
             padding: 3,
           }}
         >
