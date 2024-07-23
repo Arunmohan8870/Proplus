@@ -295,8 +295,7 @@ const Device = () => {
       gen: gen,
       serialNo: serialNo,
     }
-    const res=  await createAddProduct (addProduct).unwrap()  
-
+    const res=  await createAddProduct (addProduct).unwrap() 
     // axios
     //   .post("http://192.168.1.141:8080/api/v1/product/add_product", {
     //     productName: productName,
@@ -319,6 +318,7 @@ const Device = () => {
       })
       .catch((error) => {
         console.error(error);
+        toast.error(error.data.message);
       });
   };
 

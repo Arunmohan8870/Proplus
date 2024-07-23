@@ -65,15 +65,13 @@ import {
   useEditProductAssignMutation,
 } from "../../features/api/dashboard/dashboardApi.js";
 import CategoryIcon from "@mui/icons-material/Category";
-import CloseIcon from '@mui/icons-material/Close';
+import CloseIcon from "@mui/icons-material/Close";
 import CalendarViewWeekIcon from "@mui/icons-material/CalendarViewWeek";
 
 const Product = () => {
   const [searchProduct, setSearchProduct] = useState();
   const [openAssign, setOpenAssign] = useState(false);
   const [openss, setOpenss] = useState(false);
-  const [page, setPage] = useState(0);
-const [rowsPerPage, setRowsPerPage] = useState(5);
   const [openPosition, setOpenPosition] = useState(false);
   const [AssignDate, setAssignDate] = useState("");
   const [openProduct, setOpenProduct] = useState(false);
@@ -90,7 +88,6 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
   const [ProductId, setProductId] = useState(null);
   const [openAssignList, setOpenAssignList] = useState(false);
 
-  
   const [searchText, setSearchText] = useState();
   const [openView, setOpenView] = useState(false);
   const [editReturn, setEditReturn] = useState(false);
@@ -127,6 +124,23 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
   const [rom, setRom] = useState("");
   const [gen, setGen] = useState("");
   const [serialNo, setSerialNo] = useState("");
+  const [products, setProducts] = useState([{ item: "", value: "" }]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(2);
+
+  const paginatedData = allNewProductAssign.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const handleSearchProduct = (event) => {
     const text = event.target.value;
@@ -197,7 +211,7 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
     setOpenAssign(false);
     setOpenView(false);
     setEditReturn(false);
-    setOpenAssignList(false)
+    setOpenAssignList(false);
   };
 
   const handleAssignProduct = async (event) => {
@@ -210,16 +224,6 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
     };
     const res = await createProduct(product)
       .unwrap()
-
-      // axios
-      //   .post(
-      //     "http://192.168.1.141:8080/api/v1/product_assign/add_product_assign",
-      //     {
-      //       employeeId: selectedAssignProduct,
-      //       assignedDate: AssignDate,
-      //       productId: ProductId,
-      //     }
-      //   )
       .then((response) => {
         console.log(response);
         setOpenAssign(false);
@@ -243,65 +247,31 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
     const text = event.target.value;
     setSearchText(text);
     console.log(searchText);
-
-    // if (text) {
-    //   axios
-    //     .get("http://192.168.1.141:8080/api/v1/employee/all_employee", {
-    //       params: { search: text },
-    //     })
-    //     .then((response) => {
-    //       setEmployeList(response.data.data);
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-    // } else {
-    //   if (searchText) {
-    //     axios
-    //       .get("http://192.168.1.141:8080/api/v1/employee/all_employee", {})
-    //       .then((response) => {
-    //         setEmployeList(response.data.data);
-    //         console.log(response);
-    //       })
-    //       .catch((error) => {
-    //         console.error(error);
-    //       });
-    //   }
-    // }
   };
 
   const handleProduct = async (event) => {
     event.preventDefault();
-
+    const filteredProducts = products.filter(
+      (product) => product.item.trim() !== "" && product.value.trim() !== ""
+    );
     const addProduct = {
       productName: productName,
       categoryId: selectedCategories,
       buyDate: buyDate,
-      ram: ram,
-      rom: rom,
-      gen: gen,
       serialNo: serialNo,
+      productDetails: filteredProducts,
     };
+    console.log(addProduct);
+
     const res = await createAddProduct(addProduct)
       .unwrap()
-
-      // axios
-      //   .post("http://192.168.1.141:8080/api/v1/product/add_product", {
-      //     productName: productName,
-      //     categoryId: selectedCategories,
-      //     buyDate: buyDate,
-      //     ram: ram,
-      //     rom: rom,
-      //     gen: gen,
-      //     serialNo: serialNo,
-      //   })
       .then((response) => {
         console.log(response);
         setRam("");
         setRom("");
         setBuyDate("");
         setProductName("");
-        setSelectedCategories(null)
+        setSelectedCategories(null);
         setGen("");
 
         setOpenProduct(false);
@@ -313,7 +283,7 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
         setRom("");
         setBuyDate("");
         setProductName("");
-        setSelectedCategories(null)
+        setSelectedCategories(null);
         setGen("");
         console.error(error);
       });
@@ -347,7 +317,6 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
     setEditReturn(id);
     setProductReturnId(id);
     console.log(produrtReturnId, "testtsttt");
-
   };
 
   useEffect(() => {
@@ -369,28 +338,27 @@ const [rowsPerPage, setRowsPerPage] = useState(5);
   const handleClickOpenProduct = () => {
     setOpenProduct(true);
   };
-  const handleOpenAssignList =(id)=>{
+  const handleOpenAssignList = (id) => {
     setOpenAssignList(id);
-  }
-    
+  };
 
+  const handleInputChange = (index, field, value) => {
+    const newProducts = [...products];
+    newProducts[index][field] = value;
+    setProducts(newProducts);
+  };
 
+  const handleAddProduct = () => {
+    setProducts([...products, { item: "", value: "" }]);
+  };
 
-
-const paginatedData = allNewProductAssign.slice(
-  page * rowsPerPage,
-  page * rowsPerPage + rowsPerPage
-);
-
-
-const handleChangePage = (event, newPage) => {
-  setPage(newPage);
-};
-
-const handleChangeRowsPerPage = (event) => {
-  setRowsPerPage(parseInt(event.target.value, 10));
-  setPage(0);
-};
+  const handleSubmit = () => {
+    console.log("Products:", products);
+  };
+  const handleRemoveProduct = (index) => {
+    const newProducts = products.filter((_, i) => i !== index);
+    setProducts(newProducts);
+  };
 
   return (
     <>
@@ -461,10 +429,18 @@ const handleChangeRowsPerPage = (event) => {
           Add Product
         </Button>
 
-        <Dialog fullWidth open={openProduct} onClose={handleClose} >
+        <Dialog fullWidth open={openProduct} onClose={handleClose}>
           <DialogContent>
             <Paper sx={{ padding: 5 }}>
-            <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>
+              <CloseIcon
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  cursor: "pointer",
+                }}
+                onClick={handleClose}
+              />
               <Typography
                 sx={{ paddingBottom: 2, fontWeight: "700", color: "#2596be" }}
                 variant="h5"
@@ -473,6 +449,27 @@ const handleChangeRowsPerPage = (event) => {
                 Add Product
               </Typography>
               <form onSubmit={handleProduct}>
+                <Input
+                  placeholder="Serial No"
+                  value={serialNo}
+                  onChange={(e) => setSerialNo(e.target.value)}
+                  fullWidth
+                  // required
+                  type="number"
+                  sx={{
+                    mb: 2,
+                    padding: "10px 15px",
+                    border: "1px solid #ccc",
+                    borderRadius: "4px",
+                    "&::placeholder": {
+                      color: "#999",
+                    },
+                    "&:focus": {
+                      borderColor: "#3f51b5",
+                      outline: "none",
+                    },
+                  }}
+                />
                 <Input
                   placeholder="Product Name"
                   value={productName}
@@ -531,87 +528,116 @@ const handleChangeRowsPerPage = (event) => {
                     },
                   }}
                 />
-                <Input
-                  placeholder="Ram"
-                  value={ram}
-                  onChange={(e) => setRam(e.target.value)}
-                  fullWidth
-                  // required
+                <Box
                   sx={{
-                    mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
+                    position: "relative",
+                    marginBottom: 4,
+                    // border: "1px solid #ccc",
+                    paddingTop: 1,
                     borderRadius: "4px",
-                    "&::placeholder": {
-                      color: "#999",
-                    },
-                    "&:focus": {
-                      borderColor: "#3f51b5",
-                      outline: "none",
-                    },
+                    // p: 2,
+                  
                   }}
-                />
-                <Input
-                  placeholder="Rom"
-                  value={rom}
-                  onChange={(e) => setRom(e.target.value)}
-                  fullWidth
-                  // required
-                  sx={{
-                    mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    "&::placeholder": {
-                      color: "#999",
-                    },
-                    "&:focus": {
-                      borderColor: "#3f51b5",
-                      outline: "none",
-                    },
-                  }}
-                />
-                <Input
-                  placeholder="Generation"
-                  value={gen}
-                  onChange={(e) => setGen(e.target.value)}
-                  fullWidth
-                  // required
-                  sx={{
-                    mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    "&::placeholder": {
-                      color: "#999",
-                    },
-                    "&:focus": {
-                      borderColor: "#3f51b5",
-                      outline: "none",
-                    },
-                  }}
-                />
-                <Input
-                  placeholder="Serial No"
-                  value={serialNo}
-                  onChange={(e) => setSerialNo(e.target.value)}
-                  fullWidth
-                  // required
-                  type="number"
-                  sx={{
-                    mb: 2,
-                    padding: "10px 15px",
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    "&::placeholder": {
-                      color: "#999",
-                    },
-                    "&:focus": {
-                      borderColor: "#3f51b5",
-                      outline: "none",
-                    },
-                  }}
-                />
+                >
+                 
+                    <Divider sx={{fontSize:'14px',color:''}}  textAlign="left" >Product Detail</Divider>
+                 
+                  {products.map((product, index) => (
+                    <Card
+                      key={index}
+                      sx={{
+                        padding: 2,
+                        marginBottom: 2,
+                        paddingTop: 3,
+                        // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                       
+                      }}
+                    >
+                      <Grid container spacing={2} sx={{ position: "relative" }}>
+                        <Grid item xs={12} sm={6}>
+                          <Input
+                            placeholder="Product Item"
+                            value={product.item}
+                            onChange={(e) =>
+                              handleInputChange(index, "item", e.target.value)
+                            }
+                            sx={{
+                              mb: 2,
+                              padding: "10px 15px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
+                              "&::placeholder": {
+                                color: "#999",
+                              },
+                              "&:focus": {
+                                borderColor: "#3f51b5",
+                                outline: "none",
+                              },
+                            }}
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                          <Input
+                            placeholder="Product Value"
+                            value={product.value}
+                            onChange={(e) =>
+                              handleInputChange(index, "value", e.target.value)
+                            }
+                            sx={{
+                              mb: 2,
+                              padding: "10px 15px",
+                              border: "1px solid #ccc",
+                              borderRadius: "4px",
+                              "&::placeholder": {
+                                color: "#999",
+                              },
+                              "&:focus": {
+                                borderColor: "#3f51b5",
+                                outline: "none",
+                              },
+                            }}
+                            fullWidth
+                          />
+                        </Grid>
+                        {index > 0 && (
+                          <IconButton
+                            onClick={() => handleRemoveProduct(index)}
+                            sx={{
+                              position: "absolute",
+                              top: "-20px",
+                              right: "-14px",
+                              fontSize: "10px",
+
+                            }}
+                          >
+                            <CloseIcon sx={{ fontSize: "18px" }} size="small" />
+                          </IconButton>
+                        )}
+                      </Grid>
+                    </Card>
+                  ))}
+                  <Button
+                    onClick={handleAddProduct}
+                    sx={{
+                      mb: 2,
+                      float: "right",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "5px 5px",
+                      backgroundColor: "#3f51b5",
+                      color: "white",
+                      "&:hover": {
+                        backgroundColor: "#303f9f",
+                      },
+                    }}
+                  >
+                    <AddIcon />
+                    {/* Add Product */}
+                  </Button>
+                </Box>
+
                 <Button type="submit" color="primary" variant="contained">
                   <AddIcon />
                   Add
@@ -621,10 +647,18 @@ const handleChangeRowsPerPage = (event) => {
           </DialogContent>
         </Dialog>
 
-        <Dialog fullWidth open={openCategories} onClose={handleClose} >
+        <Dialog fullWidth open={openCategories} onClose={handleClose}>
           <DialogContent>
             <Paper sx={{ padding: 5 }}>
-            <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>
+              <CloseIcon
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  cursor: "pointer",
+                }}
+                onClick={handleClose}
+              />
 
               <Typography
                 sx={{ paddingBottom: 2, fontWeight: "700", color: "#2596be" }}
@@ -663,575 +697,271 @@ const handleChangeRowsPerPage = (event) => {
           </DialogContent>
         </Dialog>
       </Box>
-
-      {/* <div style={{ maxWidth: 1500, marginLeft: "3%" }}>
-        <Box>
-          {allNewProduct == 0 && (
-            <Typography
-              sx={{ paddingBottom: 2, fontWeight: "700", color: "#2596be" }}
-              variant="h5"
-              gutterBottom
-            >
-              {`Not found "${searchProduct}"`}
-            </Typography>
-          )}
-        </Box>
-
-        {allNewProduct.map((device, index) => (
-          <Accordion sx={{ marginBottom: 2 }} key={index}>
-            <AccordionSummary
-              sx={{ padding: 2 }}
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls={`panel${index}-content`}
-              id={`panel${index}-header`}
-            >
-              
-              <DevicesIcon
-                sx={{
-                  marginRight: "20px",
-                  display: { xs: "none", sm: "block" },
-                }}
-              />
-              <Typography sx={{ textAlign: "left", flexGrow: 1 }}>
-                {device.productName}
-              </Typography>
-              <Divider
-                sx={{ display: { xs: "none", lg: "block" }, marginX: "20px" }}
-                orientation="vertical"
-                flexItem
-              />
-              <CategoryIcon
-                sx={{
-                  marginRight: "20px",
-                  display: { xs: "none", sm: "block" },
-                }}
-              />
-              <Typography
-                sx={{
-                  display: { xs: "none", lg: "block" },
-                  textAlign: "left",
-                  flexGrow: 1,
-                }}
-              >
-                <span style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  category :{" "}
-                </span>{" "}
-                {device.categoryId.categoryName}
-              </Typography>
-              <Divider
-                sx={{ marginX: "20px" }}
-                orientation="vertical"
-                flexItem
-              />
-              <CalendarViewWeekIcon
-                sx={{
-                  marginRight: "20px",
-                  display: { xs: "none", sm: "block" },
-                }}
-              />
-              <Typography sx={{ textAlign: "left", flexGrow: 1 }}>
-                {" "}
-                <span style={{ fontWeight: "bold", fontSize: "18px" }}>
-                  {" "}
-                  S.No :{" "}
-                </span>{" "}
-                {device.serialNo}
-              </Typography>
-              <Box sx={{ flexGrow: 1 }} />
-              <Button onClick={() => handleOpenAssign(device._id)}>
-                Assign
-              </Button>
-
-              <Dialog
-                sx={{
-                  "& .MuiDialog-paper": {
-                    borderRadius: "20px",
-                    padding: 2,
-                    position: "relative",
-                  },
-                }}
-                fullWidth
-                open={openAssign === device._id}
-                onClose={handleClose}
-              >
-                <DialogContent>
-                  <Paper sx={{ padding: 5 }}>
-                  <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>
-                    <Typography
-                      sx={{
-                        paddingBottom: 2,
-                        fontWeight: "700",
-                        color: "#2596be",
-                      }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Assign
-                    </Typography>
-
-                    <form onSubmit={handleAssignProduct}>
-                      <FormControl variant="filled" fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Add Employee</InputLabel>
-                        <Select
-                          value={selectedAssignProduct}
-                          onChange={handleChangeAssignProduct}
-                          fullWidth
-                          required
-                        >
-                          {allNewEmployee.map((posList) => (
-                            <MenuItem key={posList._id} value={posList._id}>
-                              {posList.employeeName}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <TextField
-                        // placeholder="Assign Date"
-                        value={AssignDate}
-                        label="Assign Date"
-                        InputLabelProps={{ shrink: true }}
-                        onChange={(e) => setAssignDate(e.target.value)}
-                        fullWidth
-                        type="date"
-                        required
-                        sx={{
-                          mb: 2,
-                          // padding: "10px 15px",
-                          // border: "1px solid #ccc",
-                          // borderRadius: "4px",
-                          "&::placeholder": {
-                            color: "#999",
-                          },
-                          "&:focus": {
-                            borderColor: "#3f51b5",
-                            outline: "none",
-                          },
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        aria-label="add Devices"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          mt: 2,
-                        }}
-                      >
-                        <AddIcon />
-                        Add
-                      </Button>
-                    </form>
-                  </Paper>
-                </DialogContent>
-              </Dialog>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography component="div">
-                <Divider style={{ margin: "8px 0" }} />
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell
-                        style={{ fontWeight: "bold", fontSize: "16px" }}
-                      >
-                        Employee Name
-                      </TableCell>
-                      <TableCell
-                        style={{ fontWeight: "bold", fontSize: "16px" }}
-                      >
-                        Date Assigned
-                      </TableCell>
-                      <TableCell
-                        style={{ fontWeight: "bold", fontSize: "16px" }}
-                      >
-                        Date Returned
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  {allNewProductAssign.map((empList, index) => (
-                    <TableBody key={index}>
-                      {device._id === empList.productId._id && (
-                        <TableRow>
-                          <TableCell
-                            sx={{ cursor: "pointer" }}
-                            onClick={() => handleReturn(empList._id)}
-                          >
-                            {empList.employeeId.employeeName}
-                          </TableCell>
-                          <Dialog
-                            sx={{
-                              "& .MuiDialog-paper": {
-                                borderRadius: "20px",
-                                padding: 2,
-                              },
-                            }}
-                            fullWidth
-                            open={editReturn == empList._id}
-                            onClose={handleClose}
-                          >
-                            <DialogContent>
-                              <Paper sx={{ padding: 5 }}>
-                                <Typography
-                                  sx={{
-                                    paddingBottom: 2,
-                                    fontWeight: "700",
-                                    color: "#2596be",
-                                  }}
-                                  variant="h5"
-                                  gutterBottom
-                                >
-                                  Return Product
-                                </Typography>
-
-                                <form onSubmit={handleReturnProduct}>
-                                  <TextField
-                                    // placeholder="Assign Date"
-                                    label="Return Date"
-                                    value={returnDate}
-                                    inputLabelProps={{ shrink: true }}
-                                    onChange={(e) =>
-                                      setReturnDate(e.target.value)
-                                    }
-                                    fullWidth
-                                    type="date"
-                                    required
-                                    sx={{
-                                      mb: 2,
-                                      // padding: "10px 15px",
-                                      // border: "1px solid #ccc",
-                                      // borderRadius: "4px",
-                                      "&::placeholder": {
-                                        color: "#999",
-                                      },
-                                      "&:focus": {
-                                        borderColor: "#3f51b5",
-                                        outline: "none",
-                                      },
-                                    }}
-                                  />
-                                  <Button
-                                    type="submit"
-                                    color="primary"
-                                    variant="contained"
-                                    aria-label="add Devices"
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 1,
-                                      mt: 2,
-                                    }}
-                                  >
-                                    <AddIcon />
-                                    Add
-                                  </Button>
-                                </form>
-                              </Paper>
-                            </DialogContent>
-                          </Dialog>
-
-                          <TableCell>
-                            {empList.assignedDate.split("T")[0]}
-                          </TableCell>
-                          <TableCell>
-                            {empList?.returnDate?.split("T")[0]}
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  ))}
-                </Table>
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ))}
-        
-      </div> */}
       <ToastContainer />
-      <Box sx={{ display: "flex", justifyContent: "center" }}>
-
-
-        <Paper  sx={{ padding: 5, borderRadius: "10px", width: "90%" }}>
-          <Table>
-            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-              <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>Product Name</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Categories</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Serial No</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {allNewProduct.map((device, index) => (
-                <TableRow
-                  key={index}
-                  sx={{ "&:hover": { backgroundColor: "#f9f9f9" } }}
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Paper sx={{ padding: 5, borderRadius: '10px', width: '90%' }}>
+        <Table>
+          <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold' }}>Product Name</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Categories</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Serial No</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {allNewProduct.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((device, index) => (
+              <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
+                <TableCell
+                  sx={{ cursor: 'pointer' }}
+                  onClick={() => handleOpenAssignList(device?._id)}
                 >
-                  <TableCell
-                    sx={{ cursor: "pointer" }}
-                    onClick={() => handleOpenAssignList(device?._id)}
+                  {device?.productName}
+                </TableCell>
+                <TableCell>{device?.categoryId?.categoryName}</TableCell>
+                <TableCell>{device?.serialNo}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    onClick={() => handleOpenAssign(device?._id)}
+                    sx={{ marginRight: 1 }}
                   >
-                    {device?.productName}
-                  </TableCell>
-                  <TableCell>{device?.categoryId?.categoryName}</TableCell>
-                  <TableCell>{device?.serialNo}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => handleOpenAssign(device?._id)}
-                      sx={{ marginRight: 1 }}
-                    >
-                      Assign
-                    </Button>
-                    <Dialog
-                sx={{
-                  "& .MuiDialog-paper": {
-                    borderRadius: "20px",
-                    padding: 2,
-                    position: "relative",
-                  },
-                }}
-                fullWidth
-                open={openAssign === device._id}
-                onClose={handleClose}
-              >
-                <DialogContent>
-                  <Paper sx={{ padding: 5 }}>
-                  <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>
-                    <Typography
-                      sx={{
-                        paddingBottom: 2,
-                        fontWeight: "700",
-                        color: "#2596be",
-                      }}
-                      variant="h5"
-                      gutterBottom
-                    >
-                      Assign
-                    </Typography>
-
-                    <form onSubmit={handleAssignProduct}>
-                      <FormControl variant="filled" fullWidth sx={{ mb: 2 }}>
-                        <InputLabel>Add Employee</InputLabel>
-                        <Select
-                          value={selectedAssignProduct}
-                          onChange={handleChangeAssignProduct}
-                          fullWidth
-                          required
-                        >
-                          {allNewEmployee.map((posList) => (
-                            <MenuItem key={posList._id} value={posList._id}>
-                              {posList.employeeName}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-                      <TextField
-                        // placeholder="Assign Date"
-                        value={AssignDate}
-                        label="Assign Date"
-                        InputLabelProps={{ shrink: true }}
-                        onChange={(e) => setAssignDate(e.target.value)}
-                        fullWidth
-                        type="date"
-                        required
-                        sx={{
-                          mb: 2,
-                          // padding: "10px 15px",
-                          // border: "1px solid #ccc",
-                          // borderRadius: "4px",
-                          "&::placeholder": {
-                            color: "#999",
-                          },
-                          "&:focus": {
-                            borderColor: "#3f51b5",
-                            outline: "none",
-                          },
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        color="primary"
-                        variant="contained"
-                        aria-label="add Devices"
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          mt: 2,
-                        }}
-                      >
-                        <AddIcon />
-                        Add
-                      </Button>
-                    </form>
-                  </Paper>
-                </DialogContent>
-              </Dialog>
-                  </TableCell>
+                    Assign
+                  </Button>
                   <Dialog
                     sx={{
-                      "& .MuiDialog-paper": {
-                        borderRadius: "20px",
+                      '& .MuiDialog-paper': {
+                        borderRadius: '20px',
                         padding: 2,
+                        position: 'relative',
                       },
                     }}
                     fullWidth
-                    open={openAssignList === device._id}
+                    open={openAssign === device._id}
                     onClose={handleClose}
                   >
                     <DialogContent>
                       <Paper sx={{ padding: 5 }}>
+                        <CloseIcon
+                          sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            cursor: 'pointer',
+                          }}
+                          onClick={handleClose}
+                        />
                         <Typography
                           sx={{
                             paddingBottom: 2,
-                            fontWeight: "700",
-                            color: "#2596be",
+                            fontWeight: '700',
+                            color: '#2596be',
                           }}
                           variant="h5"
                           gutterBottom
                         >
                           Assign
                         </Typography>
-                        <Table>
-                          <TableHead>
-                            <TableRow>
-                              <TableCell>Employee Name</TableCell>
-                              <TableCell>Date Assigned</TableCell>
-                              <TableCell>Date Returned</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {allNewProductAssign.map((empList, empIndex) =>
-                              device?._id === empList?.productId?._id ? (
-                                <TableRow key={empIndex}>
-                                  <TableCell
-                                   
-                                       onClick={() => handleReturn(empList._id)}
-                                    
-                                  >
-                                    
-                          <Dialog
+
+                        <form onSubmit={handleAssignProduct}>
+                          <FormControl variant="filled" fullWidth sx={{ mb: 2 }}>
+                            <InputLabel>Add Employee</InputLabel>
+                            <Select
+                              value={selectedAssignProduct}
+                              onChange={handleChangeAssignProduct}
+                              fullWidth
+                              required
+                            >
+                              {allNewEmployee.map((posList) => (
+                                <MenuItem key={posList._id} value={posList._id}>
+                                  {posList.employeeName}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+                          <TextField
+                            label="Assign Date"
+                            InputLabelProps={{ shrink: true }}
+                            value={AssignDate}
+                            onChange={(e) => setAssignDate(e.target.value)}
+                            fullWidth
+                            type="date"
+                            required
                             sx={{
-                              "& .MuiDialog-paper": {
-                                borderRadius: "20px",
-                                padding: 2,
+                              mb: 2,
+                              '&::placeholder': {
+                                color: '#999',
+                              },
+                              '&:focus': {
+                                borderColor: '#3f51b5',
+                                outline: 'none',
                               },
                             }}
-                            fullWidth
-                            open={editReturn == empList._id}
-                            onClose={handleClose}
+                          />
+                          <Button
+                            type="submit"
+                            color="primary"
+                            variant="contained"
+                            aria-label="add Devices"
+                            sx={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: 1,
+                              mt: 2,
+                            }}
                           >
-                            <DialogContent>
-                              <Paper sx={{ padding: 5 }}>
-                                <Typography
-                                  sx={{
-                                    paddingBottom: 2,
-                                    fontWeight: "700",
-                                    color: "#2596be",
-                                  }}
-                                  variant="h5"
-                                  gutterBottom
-                                >
-                                  Return Product
-                                </Typography>
-
-                                <form onSubmit={handleReturnProduct}>
-                                  <TextField
-                                    label="Return Date"
-                                    inputPropsProps={{
-                                      shrink:true
-                                    }}
-                                    // placeholder="Assign Date"
-                                    value={returnDate}
-                                    onChange={(e) =>
-                                      setReturnDate(e.target.value)
-                                    }
-                                    fullWidth
-                                    type="date"
-                                    required
-                                    sx={{
-                                      mb: 2,
-                                      // padding: "10px 15px",
-                                      // border: "1px solid #ccc",
-                                      // borderRadius: "4px",
-                                      "&::placeholder": {
-                                        color: "#999",
-                                      },
-                                      "&:focus": {
-                                        borderColor: "#3f51b5",
-                                        outline: "none",
-                                      },
-                                    }}
-                                  />
-                                  <Button
-                                    type="submit"
-                                    color="primary"
-                                    variant="contained"
-                                    aria-label="add Devices"
-                                    sx={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                      gap: 1,
-                                      mt: 2,
-                                    }}
-                                  >
-                                    <AddIcon />
-                                    Add
-                                  </Button>
-                                </form>
-                              </Paper>
-                            </DialogContent>
-                          </Dialog>
-                                    {empList.employeeId.employeeName}
-                                  </TableCell>
-                                  <TableCell>
-                                    {empList?.assignedDate?.split("T")[0]}
-                                  </TableCell>
-                                  <TableCell>
-                                    {empList.returnDate?.split("T")[0]}
-                                  </TableCell>
-                                </TableRow>
-                              ) : null
-                            )}
-                          </TableBody>
-                        </Table>
+                            <AddIcon />
+                            Add
+                          </Button>
+                        </form>
                       </Paper>
                     </DialogContent>
                   </Dialog>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={allNewProduct.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            sx={{
-              "& .MuiTablePagination-toolbar": {
-                justifyContent: "flex-end",
-              },
-              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
-                {
-                  fontSize: "0.875rem",
-                },
-              "& .MuiTablePagination-select": {
-                fontSize: "0.875rem",
-              },
-            }}
-          />
-        </Paper>
-       
-      </Box>
+                </TableCell>
+                <Dialog
+                  sx={{
+                    '& .MuiDialog-paper': {
+                      borderRadius: '20px',
+                      padding: 2,
+                    },
+                  }}
+                  fullWidth
+                  open={openAssignList === device._id}
+                  onClose={handleClose}
+                >
+                  <DialogContent>
+                    <Paper sx={{ padding: 5 }}>
+                      <Typography
+                        sx={{
+                          paddingBottom: 2,
+                          fontWeight: '700',
+                          color: '#2596be',
+                        }}
+                        variant="h5"
+                        gutterBottom
+                      >
+                        Assign
+                      </Typography>
+                      <Table>
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Employee Name</TableCell>
+                            <TableCell>Date Assigned</TableCell>
+                            <TableCell>Date Returned</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {paginatedData.map(
+                            (empList, empIndex) =>
+                              device?._id === empList?.productId?._id && (
+                                <TableRow key={empIndex}>
+                                  <TableCell onClick={() => handleReturn(empList._id)}>
+                                    <Dialog
+                                      sx={{
+                                        '& .MuiDialog-paper': {
+                                          borderRadius: '20px',
+                                          padding: 2,
+                                        },
+                                      }}
+                                      fullWidth
+                                      open={editReturn == empList._id}
+                                      onClose={handleClose}
+                                    >
+                                      <DialogContent>
+                                        <Paper sx={{ padding: 5 }}>
+                                          <Typography
+                                            sx={{
+                                              paddingBottom: 2,
+                                              fontWeight: '700',
+                                              color: '#2596be',
+                                            }}
+                                            variant="h5"
+                                            gutterBottom
+                                          >
+                                            Return Product
+                                          </Typography>
+
+                                          <form onSubmit={handleReturnProduct}>
+                                            <TextField
+                                              label="Return Date"
+                                              InputLabelProps={{ shrink: true }}
+                                              value={returnDate}
+                                              onChange={(e) => setReturnDate(e.target.value)}
+                                              fullWidth
+                                              type="date"
+                                              required
+                                              sx={{
+                                                mb: 2,
+                                                '&::placeholder': {
+                                                  color: '#999',
+                                                },
+                                                '&:focus': {
+                                                  borderColor: '#3f51b5',
+                                                  outline: 'none',
+                                                },
+                                              }}
+                                            />
+                                            <Button
+                                              type="submit"
+                                              color="primary"
+                                              variant="contained"
+                                              aria-label="add Devices"
+                                              sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1,
+                                                mt: 2,
+                                              }}
+                                            >
+                                              <AddIcon />
+                                              Add
+                                            </Button>
+                                          </form>
+                                        </Paper>
+                                      </DialogContent>
+                                    </Dialog>
+                                    {empList.employeeId.employeeName}
+                                  </TableCell>
+                                  <TableCell>{empList?.assignedDate?.split('T')[0]}</TableCell>
+                                  <TableCell>{empList.returnDate?.split('T')[0]}</TableCell>
+                                </TableRow>
+                              )
+                          )}
+                        </TableBody>
+                      </Table>
+                    </Paper>
+                  </DialogContent>
+                </Dialog>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[2, 10, 25]}
+          component="div"
+          count={allNewProduct.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+          sx={{
+            '& .MuiTablePagination-toolbar': {
+              justifyContent: 'flex-end',
+            },
+            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+              fontSize: '0.875rem',
+            },
+            '& .MuiTablePagination-select': {
+              fontSize: '0.875rem',
+            },
+          }}
+        />
+      </Paper>
+    </Box>
     </>
   );
 };
 
 export default Product;
+

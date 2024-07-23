@@ -43,6 +43,16 @@ export const dashboardApi = api.injectEndpoints({
 
             invalidatesTags:["addProduct"],
         }),
+        employeeLogin: builder.mutation({
+          query: (query) => ({
+              url: "/employee/login",
+              method: "POST",
+              body: query
+
+          }),
+
+          // invalidatesTags:["addProduct"],
+      }),
 
         addCategory: builder.mutation({
             query: (query) => ({
@@ -154,7 +164,7 @@ export const dashboardApi = api.injectEndpoints({
 export const { useCreateSubDepartmentMutation, useCreateProductMutation, useAddPositionMutation, useAddProductMutation, 
 useAddCategoryMutation, useAddDepartmentMutation, useAddEmployeeMutation, useAllDepartmentQuery, useAllProductQuery,
 useAllCategoryQuery, useAllEmployeeQuery, useAllPositionQuery, useAllSubDepartmentQuery, useAllProductAssignQuery,
-useEditEmployeeMutation, useEditProductAssignMutation
+useEditEmployeeMutation, useEditProductAssignMutation,useEmployeeLoginMutation
 
 } = dashboardApi;
 

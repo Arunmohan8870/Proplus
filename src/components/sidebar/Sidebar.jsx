@@ -41,7 +41,7 @@ const Sidebar = () => {
           key="3"
           icon={<CarryOutOutlined style={{ fontSize: "18px" }} />}
         >
-          <Link to="/profile">Profile Info</Link>
+          <Link to="/login">Login</Link>
         </Menu.Item> */}
 
          {/* <Menu.Item
