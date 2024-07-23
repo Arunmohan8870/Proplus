@@ -126,7 +126,7 @@ const Product = () => {
   const [serialNo, setSerialNo] = useState("");
   const [products, setProducts] = useState([{ item: "", value: "" }]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(2);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const paginatedData = allNewProductAssign.slice(
     page * rowsPerPage,
@@ -455,7 +455,7 @@ const Product = () => {
                   onChange={(e) => setSerialNo(e.target.value)}
                   fullWidth
                   // required
-                  type="number"
+                  // type="number"
                   sx={{
                     mb: 2,
                     padding: "10px 15px",
@@ -640,7 +640,7 @@ const Product = () => {
 
                 <Button type="submit" color="primary" variant="contained">
                   <AddIcon />
-                  Add
+                  Add Product
                 </Button>
               </form>
             </Paper>
@@ -690,7 +690,7 @@ const Product = () => {
                 />
                 <Button type="submit" color="primary" variant="contained">
                   <AddIcon />
-                  Add
+                  Add Category
                 </Button>
               </form>
             </Paper>
@@ -812,7 +812,7 @@ const Product = () => {
                             }}
                           >
                             <AddIcon />
-                            Add
+                            Assign
                           </Button>
                         </form>
                       </Paper>

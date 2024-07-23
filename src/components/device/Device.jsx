@@ -838,7 +838,13 @@ const Device = () => {
           </Button> */}
         </Box>
         <Dialog
-          sx={{ borderRadius: 99 }}
+          sx={{
+            '& .MuiDialog-paper': {
+              borderRadius: '20px',
+              padding: 2,
+            },
+          }}
+          
           fullWidth
           open={opens}
           onClose={handleClose}
@@ -1017,7 +1023,7 @@ const Device = () => {
                   required
                   onChange={(e) => setProPlusID(e.target.value)}
                   fullWidth
-                  type="number"
+                  // type="number"
                   sx={{
                     mb: 2,
                     padding: "10px 15px",
@@ -1051,7 +1057,13 @@ const Device = () => {
           </DialogContent>
         </Dialog>
         <Dialog
-          sx={{ borderRadius: 99 }}
+           sx={{
+            '& .MuiDialog-paper': {
+              borderRadius: '20px',
+              padding: 2,
+            },
+          }}
+          
           fullWidth
           open={openss}
           onClose={handleClose}
@@ -1262,7 +1274,13 @@ const Device = () => {
           </DialogContent>
         </Dialog>
         <Dialog
-          sx={{ borderRadius: 99 }}
+          sx={{
+            '& .MuiDialog-paper': {
+              borderRadius: '20px',
+              padding: 2,
+            },
+          }}
+          
           fullWidth
           open={open}
           onClose={handleClose}
@@ -1312,7 +1330,13 @@ const Device = () => {
           </DialogContent>
         </Dialog>
         <Dialog
-          sx={{ borderRadius: 99 }}
+           sx={{
+            '& .MuiDialog-paper': {
+              borderRadius: '20px',
+              padding: 2,
+            },
+          }}
+          
           fullWidth
           open={openPosition}
           onClose={handleClose}
@@ -1362,7 +1386,13 @@ const Device = () => {
           </DialogContent>
         </Dialog>
         <Dialog
-          sx={{ borderRadius: 99 }}
+         sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '20px',
+            padding: 2,
+          },
+        }}
+        
           fullWidth
           open={openPositions}
           onClose={handleClose}
@@ -1570,7 +1600,15 @@ const Device = () => {
           </DialogContent>
         </Dialog>
 
-        <Dialog fullWidth open={openCategories} onClose={handleClose}>
+        <Dialog
+         sx={{
+          '& .MuiDialog-paper': {
+            borderRadius: '20px',
+            padding: 2,
+          },
+        }}
+        
+          fullWidth open={openCategories} onClose={handleClose}>
           <DialogContent>
             <Paper sx={{ padding: 5 }}>
             <CloseIcon sx={{ position: "absolute", top: 8, right: 8, cursor: "pointer" }} onClick={handleClose}/>

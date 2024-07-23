@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
 import Dashboard from "./pages/home_dashboard/index";
+import LogoutIcon from '@mui/icons-material/Logout';
 import Sidebar from "./components/sidebar";
 import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Button, Layout } from "antd";
@@ -55,21 +62,41 @@ const App = () => {
               width={280}
               collapsedWidth={isMobile ? 0 : 80}
             >
-              
               <Sidebar />
               <div style={{ position: "absolute", bottom: 20, width: "100%" }}>
                 <Button
                   type="text"
-                  icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                  icon={
+                    collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />
+                  }
                   onClick={() => setCollapsed(!collapsed)}
                   className="triggr-btn mobilebtn"
-                  style={{ marginLeft: '1%' }}
+                  style={{ marginLeft: "1%" }}
                 />
                 <Button
-                  type="text"
+                  type="button"
+                  variant="contained"
                   onClick={handleLogout}
-                  style={{ marginLeft: '3%' }}
+                  style={{
+                    marginLeft: "3%",
+                    // backgroundColor: "#8A1E3A",
+                    // color: "#fff",
+                    padding: "8px 16px",
+                    fontSize: "16px",
+                    textTransform: "none",
+                    borderRadius: "8px",
+                    boxShadow: 3,
+                    "&:hover": {
+                      backgroundColor: "#63162A",
+                    },
+                    "&:active": {
+                      boxShadow: 1,
+                    },
+                    border: "1px solid #8805D7",
+                    marginTop: "10px",
+                  }}
                 >
+                  <LogoutIcon fontSize="10"/>
                   Logout
                 </Button>
               </div>
@@ -78,10 +105,27 @@ const App = () => {
           <Layout>
             <Content style={{ backgroundColor: "#f7f7f7", padding: "24px" }}>
               <Routes>
-                <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-                <Route path="/" element={<ProtectedRoute><Device /></ProtectedRoute>} />
+                <Route
+                  path="/login"
+                  element={<Login setIsLoggedIn={setIsLoggedIn} />}
+                />
+                <Route
+                  path="/"
+                  element={
+                    <ProtectedRoute>
+                      <Device />
+                    </ProtectedRoute>
+                  }
+                />
                 {/* <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} /> */}
-                <Route path="/product" element={<ProtectedRoute><Product /></ProtectedRoute>} />
+                <Route
+                  path="/product"
+                  element={
+                    <ProtectedRoute>
+                      <Product />
+                    </ProtectedRoute>
+                  }
+                />
                 {/* <Route path="/employee" element={<ProtectedRoute><Employee /></ProtectedRoute>} /> */}
                 {/* <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} /> */}
                 {/* <Route path="/device" element={<ProtectedRoute><Device /></ProtectedRoute>} /> */}
