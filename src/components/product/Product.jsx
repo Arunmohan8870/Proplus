@@ -301,6 +301,8 @@ const Product = () => {
         setProductName("");
         setSelectedCategories(null);
         setGen("");
+        setProducts([{ item: "", value: "" }])
+        setSerialNo('')
 
         setOpenProduct(false);
         toast.success("Product Added Successfully");
@@ -335,8 +337,9 @@ const Product = () => {
       .then((response) => {
         console.log(response);
         refetchProduct();
-
+        
         setOpenEditProduct(false);
+        
         // setRom("");
         // setBuyDate("");
         // setProductName("");

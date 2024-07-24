@@ -9,6 +9,7 @@
   
   }
   
+  
   .content{
     margin: 24px 16px;
     padding: 20px;
@@ -24,7 +25,7 @@
   }
   
   .sider{
-    height: 100vh;
+    height: 90vh;
     position: sticky !important;
     left: 0;
     bottom: 0;

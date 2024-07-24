@@ -1745,9 +1745,10 @@ const Device = () => {
                           borderRadius: 4,
                           boxShadow: 3,
                           backgroundImage:
+                            // https://images.pexels.com/photos/1424246/pexels-photo-1424246.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load
                             // https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1
-                            // https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg
-                            'url("https://images.pexels.com/photos/1424246/pexels-photo-1424246.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load")',
+                            //
+                            'url("https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg")',
                           backgroundSize: "cover",
 
                           backgroundPosition: "center",
