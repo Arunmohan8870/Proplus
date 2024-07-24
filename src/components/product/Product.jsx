@@ -9,7 +9,10 @@ import {
   CardActions,
   CardContent,
   Dialog,
+  DialogActions,
   DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -25,9 +28,15 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-
+// import { styled } from '@mui/material/styles';
+// import FormGroup from '@mui/material/FormGroup';
+// import FormControlLabel from '@mui/material/FormControlLabel';
+// import Switch, { SwitchProps } from '@mui/material/Switch';
+// import Stack from '@mui/material/Stack';
+import EditIcon from "@mui/icons-material/Edit";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import {
   Email as EmailIcon,
@@ -52,9 +61,6 @@ import {
   useAddPositionMutation,
   useAddProductMutation,
   useAddCategoryMutation,
-  useAddDepartmentMutation,
-  useAddEmployeeMutation,
-  useAllDepartmentQuery,
   useAllProductQuery,
   useAllCategoryQuery,
   useAllEmployeeQuery,
@@ -63,6 +69,8 @@ import {
   useAllProductAssignQuery,
   useEditEmployeeMutation,
   useEditProductAssignMutation,
+  useEditProductMutation,
+  useDeleteProductMutation,
 } from "../../features/api/dashboard/dashboardApi.js";
 import CategoryIcon from "@mui/icons-material/Category";
 import CloseIcon from "@mui/icons-material/Close";
@@ -75,6 +83,7 @@ const Product = () => {
   const [openPosition, setOpenPosition] = useState(false);
   const [AssignDate, setAssignDate] = useState("");
   const [openProduct, setOpenProduct] = useState(false);
+  const [openEditProduct, setOpenEditProduct] = useState(false);
   const [openPositions, setOpenPositions] = useState(false);
   const [openCategories, setOpenCategories] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState("");
@@ -96,6 +105,8 @@ const Product = () => {
   const [categories, setCategories] = useState("");
   const [open, setOpen] = useState(false);
   const [opens, setOpens] = useState(false);
+  const [productEditId, setProductEditId] = useState();
+  const [openDelete, setOpenDelete] = useState(false);
 
   const { data: allProduct, refetch: refetchProduct } = useAllProductQuery(
     searchProduct || ""
@@ -108,6 +119,9 @@ const Product = () => {
   const [createAddCategory] = useAddCategoryMutation();
   const [createAddProduct] = useAddProductMutation();
   const [createProduct] = useCreateProductMutation();
+  const [editProduct] = useEditProductMutation();
+
+  const [deleteProduct] = useDeleteProductMutation();
   const { data: allCategory, refetch: refetchCategory } = useAllCategoryQuery();
 
   const [allEditProductAssign] = useEditProductAssignMutation();
@@ -146,31 +160,6 @@ const Product = () => {
     const text = event.target.value;
     setSearchProduct(text);
     console.log(searchProduct);
-
-    // if (text) {
-    //   axios
-    //     .get("http://192.168.1.141:8080/api/v1/product/all_product", {
-    //       params: { search: text },
-    //     })
-    //     .then((response) => {
-    //       setAllProductList(response.data.data);
-    //     })
-    //     .catch((error) => {
-    //       console.error(error);
-    //     });
-    // } else {
-    //   if (searchProduct) {
-    //     axios
-    //       .get("http://192.168.1.141:8080/api/v1/product/all_product", {})
-    //       .then((response) => {
-    //         setAllProductList(response.data.data);
-    //         console.log(response);
-    //       })
-    //       .catch((error) => {
-    //         console.error(error);
-    //       });
-    //   }
-    // }
   };
 
   const handleCategories = async (event) => {
@@ -178,10 +167,6 @@ const Product = () => {
 
     const res = await createAddCategory({ categoryName: categories })
       .unwrap()
-      // axios
-      //   .post("http://192.168.1.141:8080/api/v1/category/add_category", {
-      //     categoryName: categories,
-      //   })
       .then((response) => {
         console.log(response);
         setCategories("");
@@ -200,7 +185,50 @@ const Product = () => {
     setProductId(id);
   };
 
+  const handleOpenEdit = (product) => {
+    console.log(product);
+    const formattedDate = format(new Date(product?.buyDate), "yyyy-MM-dd");
+    setBuyDate(formattedDate);
+    setSelectedCategories(product?.categoryId?._id);
+    setProductName(product?.productName);
+    setSerialNo(product?.serialNo);
+    setOpenEditProduct(product?._id);
+    setProductEditId(product?._id);
+    setProducts([
+      {
+        item: product?.productDetails[0]?.item,
+        value: product?.productDetails[0]?.value,
+      },
+    ]);
+    // setOpenAssign(id);
+    // setProductId(id);
+  };
+  const handleOpenDelete = (id) => {
+    setOpenDelete(id);
+  };
+  const handleDeleteProduct = async (id) => {
+    // console.log(id);
+    // const value = id
+    try {
+      const deletePro = await deleteProduct(id)
+        .unwrap()
+        .then((response) => {
+          refetchProduct();
+          console.log(response);
+          setOpenDelete(false);
+          toast.success("Product Deleted Successfully");
+        })
+        .catch((error) => {
+          toast.error(error.data.message);
+          console.error(error);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const handleClose = () => {
+    setOpenDelete(false);
+    setOpenEditProduct(false);
     setOpen(false);
     setOpens(false);
     setOpenPosition(false);
@@ -285,6 +313,42 @@ const Product = () => {
         setProductName("");
         setSelectedCategories(null);
         setGen("");
+        console.error(error);
+      });
+  };
+  const handleEditProduct = async (event) => {
+    event.preventDefault();
+    const filteredProducts = products.filter(
+      (product) => product.item.trim() !== "" && product.value.trim() !== ""
+    );
+    const value = {
+      productName: productName,
+      categoryId: selectedCategories,
+      buyDate: buyDate,
+      serialNo: serialNo,
+      productDetails: filteredProducts,
+    };
+    console.log(value);
+
+    const res = await editProduct({ value, productEditId })
+      .unwrap()
+      .then((response) => {
+        console.log(response);
+        refetchProduct();
+
+        setOpenEditProduct(false);
+        // setRom("");
+        // setBuyDate("");
+        // setProductName("");
+        // setSelectedCategories(null);
+        // setGen("");
+
+        setOpenProduct(false);
+        toast.success(response.message);
+      })
+      .catch((error) => {
+        toast.error(error.data.message);
+        setOpenProduct(false);
         console.error(error);
       });
   };
@@ -429,7 +493,17 @@ const Product = () => {
           Add Product
         </Button>
 
-        <Dialog fullWidth open={openProduct} onClose={handleClose}>
+        <Dialog
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: "20px",
+              padding: 2,
+            },
+          }}
+          fullWidth
+          open={openProduct}
+          onClose={handleClose}
+        >
           <DialogContent>
             <Paper sx={{ padding: 5 }}>
               <CloseIcon
@@ -536,12 +610,15 @@ const Product = () => {
                     paddingTop: 1,
                     borderRadius: "4px",
                     // p: 2,
-                  
                   }}
                 >
-                 
-                    <Divider sx={{fontSize:'14px',color:''}}  textAlign="left" >Product Detail</Divider>
-                 
+                  <Divider
+                    sx={{ fontSize: "14px", color: "" }}
+                    textAlign="left"
+                  >
+                    Product Detail
+                  </Divider>
+
                   {products.map((product, index) => (
                     <Card
                       key={index}
@@ -550,7 +627,6 @@ const Product = () => {
                         marginBottom: 2,
                         paddingTop: 3,
                         // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                       
                       }}
                     >
                       <Grid container spacing={2} sx={{ position: "relative" }}>
@@ -608,7 +684,6 @@ const Product = () => {
                               top: "-20px",
                               right: "-14px",
                               fontSize: "10px",
-
                             }}
                           >
                             <CloseIcon sx={{ fontSize: "18px" }} size="small" />
@@ -647,7 +722,17 @@ const Product = () => {
           </DialogContent>
         </Dialog>
 
-        <Dialog fullWidth open={openCategories} onClose={handleClose}>
+        <Dialog
+          sx={{
+            "& .MuiDialog-paper": {
+              borderRadius: "20px",
+              padding: 2,
+            },
+          }}
+          fullWidth
+          open={openCategories}
+          onClose={handleClose}
+        >
           <DialogContent>
             <Paper sx={{ padding: 5 }}>
               <CloseIcon
@@ -698,270 +783,621 @@ const Product = () => {
         </Dialog>
       </Box>
       <ToastContainer />
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-      <Paper sx={{ padding: 5, borderRadius: '10px', width: '90%' }}>
-        <Table>
-          <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold' }}>Product Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Categories</TableCell>
-              <TableCell sx={{ fontWeight: 'bold' }}>Serial No</TableCell>
-              <TableCell></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {allNewProduct.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((device, index) => (
-              <TableRow key={index} sx={{ '&:hover': { backgroundColor: '#f9f9f9' } }}>
-                <TableCell
-                  sx={{ cursor: 'pointer' }}
-                  onClick={() => handleOpenAssignList(device?._id)}
-                >
-                  {device?.productName}
-                </TableCell>
-                <TableCell>{device?.categoryId?.categoryName}</TableCell>
-                <TableCell>{device?.serialNo}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    onClick={() => handleOpenAssign(device?._id)}
-                    sx={{ marginRight: 1 }}
-                  >
-                    Assign
-                  </Button>
-                  <Dialog
+      <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Paper sx={{ padding: 5, borderRadius: "10px", width: "90%" }}>
+          <Table>
+            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableRow>
+                <TableCell sx={{ fontWeight: "bold" }}>Product Name</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Categories</TableCell>
+                <TableCell sx={{ fontWeight: "bold" }}>Serial No</TableCell>
+                <TableCell></TableCell>
+                {/* <TableCell></TableCell> */}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {allNewProduct
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((device, index) => (
+                  <TableRow
                     sx={{
-                      '& .MuiDialog-paper': {
-                        borderRadius: '20px',
-                        padding: 2,
-                        position: 'relative',
-                      },
+                      // backgroundColor: device.isActive ? "#fff" : "#f0f0f0",
+                      // pointerEvents: device.isActive ? "auto" : "none",
+                      // opacity: device.isActive ? 1 : 0.5,
+                      "&:hover": { backgroundColor: "#f9f9f9" },
                     }}
-                    fullWidth
-                    open={openAssign === device._id}
-                    onClose={handleClose}
+                    key={index}
                   >
-                    <DialogContent>
-                      <Paper sx={{ padding: 5 }}>
-                        <CloseIcon
-                          sx={{
-                            position: 'absolute',
-                            top: 8,
-                            right: 8,
-                            cursor: 'pointer',
-                          }}
-                          onClick={handleClose}
-                        />
-                        <Typography
-                          sx={{
-                            paddingBottom: 2,
-                            fontWeight: '700',
-                            color: '#2596be',
-                          }}
-                          variant="h5"
-                          gutterBottom
-                        >
-                          Assign
-                        </Typography>
-
-                        <form onSubmit={handleAssignProduct}>
-                          <FormControl variant="filled" fullWidth sx={{ mb: 2 }}>
-                            <InputLabel>Add Employee</InputLabel>
-                            <Select
-                              value={selectedAssignProduct}
-                              onChange={handleChangeAssignProduct}
-                              fullWidth
-                              required
-                            >
-                              {allNewEmployee.map((posList) => (
-                                <MenuItem key={posList._id} value={posList._id}>
-                                  {posList.employeeName}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
-                          <TextField
-                            label="Assign Date"
-                            InputLabelProps={{ shrink: true }}
-                            value={AssignDate}
-                            onChange={(e) => setAssignDate(e.target.value)}
-                            fullWidth
-                            type="date"
-                            required
-                            sx={{
-                              mb: 2,
-                              '&::placeholder': {
-                                color: '#999',
-                              },
-                              '&:focus': {
-                                borderColor: '#3f51b5',
-                                outline: 'none',
-                              },
-                            }}
-                          />
-                          <Button
-                            type="submit"
-                            color="primary"
-                            variant="contained"
-                            aria-label="add Devices"
-                            sx={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: 1,
-                              mt: 2,
-                            }}
-                          >
-                            <AddIcon />
-                            Assign
-                          </Button>
-                        </form>
-                      </Paper>
-                    </DialogContent>
-                  </Dialog>
-                </TableCell>
-                <Dialog
-                  sx={{
-                    '& .MuiDialog-paper': {
-                      borderRadius: '20px',
-                      padding: 2,
-                    },
-                  }}
-                  fullWidth
-                  open={openAssignList === device._id}
-                  onClose={handleClose}
-                >
-                  <DialogContent>
-                    <Paper sx={{ padding: 5 }}>
-                      <Typography
-                        sx={{
-                          paddingBottom: 2,
-                          fontWeight: '700',
-                          color: '#2596be',
-                        }}
-                        variant="h5"
-                        gutterBottom
+                    <TableCell
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => handleOpenAssignList(device?._id)}
+                    >
+                      {device?.productName}
+                    </TableCell>
+                    <TableCell>{device?.categoryId?.categoryName}</TableCell>
+                    <TableCell>{device?.serialNo}</TableCell>
+                    <TableCell align="right">
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => handleOpenAssign(device?._id)}
+                        sx={{ marginRight: 1 }}
+                        disabled={!device?.isActive}
                       >
                         Assign
-                      </Typography>
-                      <Table>
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Employee Name</TableCell>
-                            <TableCell>Date Assigned</TableCell>
-                            <TableCell>Date Returned</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {paginatedData.map(
-                            (empList, empIndex) =>
-                              device?._id === empList?.productId?._id && (
-                                <TableRow key={empIndex}>
-                                  <TableCell onClick={() => handleReturn(empList._id)}>
-                                    <Dialog
-                                      sx={{
-                                        '& .MuiDialog-paper': {
-                                          borderRadius: '20px',
-                                          padding: 2,
-                                        },
-                                      }}
-                                      fullWidth
-                                      open={editReturn == empList._id}
-                                      onClose={handleClose}
-                                    >
-                                      <DialogContent>
-                                        <Paper sx={{ padding: 5 }}>
-                                          <Typography
-                                            sx={{
-                                              paddingBottom: 2,
-                                              fontWeight: '700',
-                                              color: '#2596be',
-                                            }}
-                                            variant="h5"
-                                            gutterBottom
-                                          >
-                                            Return Product
-                                          </Typography>
+                      </Button>
+                      <IconButton  onClick={() => handleOpenEdit(device)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleOpenDelete(device?._id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                      {/* <FormControlLabel
+        control={<IOSSwitch sx={{ m: 1 }} defaultChecked />}
+        label="iOS style"
+      /> */}
+                      <Dialog
+                        fullwidth
+                        sx={{
+                          "& .MuiDialog-paper": {
+                            borderRadius: "20px",
+                            padding: 2,
+                          },
+                        }}
+                        open={openDelete === device?._id}
+                        onClose={handleClose}
+                        // aria-labelledby="alert-dialog-title"
+                        // aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"Delete Confirmation"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            Are you sure you want to delete this product?
+                            {/* {device?._id} */}
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button
+                            variant="outlined"
+                            onClick={handleClose}
+                            color="primary"
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteProduct(device._id)}
+                            color="primary"
+                            variant="contained"
+                            autoFocus
+                          >
+                            Remove
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
 
-                                          <form onSubmit={handleReturnProduct}>
-                                            <TextField
-                                              label="Return Date"
-                                              InputLabelProps={{ shrink: true }}
-                                              value={returnDate}
-                                              onChange={(e) => setReturnDate(e.target.value)}
-                                              fullWidth
-                                              type="date"
-                                              required
-                                              sx={{
-                                                mb: 2,
-                                                '&::placeholder': {
-                                                  color: '#999',
-                                                },
-                                                '&:focus': {
-                                                  borderColor: '#3f51b5',
-                                                  outline: 'none',
-                                                },
-                                              }}
-                                            />
-                                            <Button
-                                              type="submit"
-                                              color="primary"
-                                              variant="contained"
-                                              aria-label="add Devices"
-                                              sx={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 1,
-                                                mt: 2,
-                                              }}
-                                            >
-                                              <AddIcon />
-                                              Add
-                                            </Button>
-                                          </form>
-                                        </Paper>
-                                      </DialogContent>
-                                    </Dialog>
-                                    {empList.employeeId.employeeName}
-                                  </TableCell>
-                                  <TableCell>{empList?.assignedDate?.split('T')[0]}</TableCell>
-                                  <TableCell>{empList.returnDate?.split('T')[0]}</TableCell>
-                                </TableRow>
-                              )
-                          )}
-                        </TableBody>
-                      </Table>
-                    </Paper>
-                  </DialogContent>
-                </Dialog>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          rowsPerPageOptions={[2, 10, 25]}
-          component="div"
-          count={allNewProduct.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          sx={{
-            '& .MuiTablePagination-toolbar': {
-              justifyContent: 'flex-end',
-            },
-            '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
-              fontSize: '0.875rem',
-            },
-            '& .MuiTablePagination-select': {
-              fontSize: '0.875rem',
-            },
-          }}
-        />
-      </Paper>
-    </Box>
+                      <Dialog
+                        sx={{
+                          "& .MuiDialog-paper": {
+                            borderRadius: "20px",
+                            padding: 2,
+                            position: "relative",
+                          },
+                        }}
+                        fullWidth
+                        open={openEditProduct}
+                        onClose={handleClose}
+                      >
+                        <DialogContent>
+                          <Paper sx={{ padding: 5 }}>
+                            <CloseIcon
+                              sx={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                cursor: "pointer",
+                              }}
+                              onClick={handleClose}
+                            />
+                            <Typography
+                              sx={{
+                                paddingBottom: 2,
+                                fontWeight: "700",
+                                color: "#2596be",
+                              }}
+                              variant="h5"
+                              gutterBottom
+                            >
+                              Edit Product
+                            </Typography>
+                            <form onSubmit={handleEditProduct}>
+                              <Input
+                                placeholder="Serial No"
+                                value={serialNo}
+                                onChange={(e) => setSerialNo(e.target.value)}
+                                fullWidth
+                                // required
+                                // type="number"
+                                sx={{
+                                  mb: 2,
+                                  padding: "10px 15px",
+                                  border: "1px solid #ccc",
+                                  borderRadius: "4px",
+                                  "&::placeholder": {
+                                    color: "#999",
+                                  },
+                                  "&:focus": {
+                                    borderColor: "#3f51b5",
+                                    outline: "none",
+                                  },
+                                }}
+                              />
+                              <Input
+                                placeholder="Product Name"
+                                value={productName}
+                                onChange={(e) => setProductName(e.target.value)}
+                                fullWidth
+                                required
+                                sx={{
+                                  mb: 2,
+                                  padding: "10px 15px",
+                                  border: "1px solid #ccc",
+                                  borderRadius: "4px",
+                                  "&::placeholder": {
+                                    color: "#999",
+                                  },
+                                  "&:focus": {
+                                    borderColor: "#3f51b5",
+                                    outline: "none",
+                                  },
+                                }}
+                              />
+                              <FormControl
+                                variant="filled"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                              >
+                                <InputLabel>Category</InputLabel>
+                                <Select
+                                  value={selectedCategories}
+                                  onChange={handleChangeCategories}
+                                  fullWidth
+                                  required
+                                >
+                                  {allNewCategory.map((pos) => (
+                                    <MenuItem key={pos?._id} value={pos?._id}>
+                                      {pos?.categoryName}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                              <TextField
+                                // placeholder="Buy Date"
+                                label="Buy Date"
+                                InputLabelProps={{ shrink: true }}
+                                value={buyDate}
+                                onChange={(e) => setBuyDate(e.target.value)}
+                                fullWidth
+                                // required
+                                type="date"
+                                sx={{
+                                  mb: 2,
+                                  // padding: "10px 15px",
+                                  // border: "1px solid #ccc",
+                                  // borderRadius: "4px",
+                                  "&::placeholder": {
+                                    color: "#999",
+                                  },
+                                  "&:focus": {
+                                    borderColor: "#3f51b5",
+                                    outline: "none",
+                                  },
+                                }}
+                              />
+                              <Box
+                                sx={{
+                                  position: "relative",
+                                  marginBottom: 4,
+                                  // border: "1px solid #ccc",
+                                  paddingTop: 1,
+                                  borderRadius: "4px",
+                                  // p: 2,
+                                }}
+                              >
+                                <Divider
+                                  sx={{ fontSize: "14px", color: "" }}
+                                  textAlign="left"
+                                >
+                                  Product Detail
+                                </Divider>
+
+                                {products.map((product, index) => (
+                                  <Card
+                                    key={index}
+                                    sx={{
+                                      padding: 2,
+                                      marginBottom: 2,
+                                      paddingTop: 3,
+                                      // boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                                    }}
+                                  >
+                                    <Grid
+                                      container
+                                      spacing={2}
+                                      sx={{ position: "relative" }}
+                                    >
+                                      <Grid item xs={12} sm={6}>
+                                        <Input
+                                          placeholder="Product Item"
+                                          value={product.item}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              index,
+                                              "item",
+                                              e.target.value
+                                            )
+                                          }
+                                          sx={{
+                                            mb: 2,
+                                            padding: "10px 15px",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "4px",
+                                            "&::placeholder": {
+                                              color: "#999",
+                                            },
+                                            "&:focus": {
+                                              borderColor: "#3f51b5",
+                                              outline: "none",
+                                            },
+                                          }}
+                                          fullWidth
+                                        />
+                                      </Grid>
+                                      <Grid item xs={12} sm={6}>
+                                        <Input
+                                          placeholder="Product Value"
+                                          value={product.value}
+                                          onChange={(e) =>
+                                            handleInputChange(
+                                              index,
+                                              "value",
+                                              e.target.value
+                                            )
+                                          }
+                                          sx={{
+                                            mb: 2,
+                                            padding: "10px 15px",
+                                            border: "1px solid #ccc",
+                                            borderRadius: "4px",
+                                            "&::placeholder": {
+                                              color: "#999",
+                                            },
+                                            "&:focus": {
+                                              borderColor: "#3f51b5",
+                                              outline: "none",
+                                            },
+                                          }}
+                                          fullWidth
+                                        />
+                                      </Grid>
+                                      {index > 0 && (
+                                        <IconButton
+                                          onClick={() =>
+                                            handleRemoveProduct(index)
+                                          }
+                                          sx={{
+                                            position: "absolute",
+                                            top: "-20px",
+                                            right: "-14px",
+                                            fontSize: "10px",
+                                          }}
+                                        >
+                                          <CloseIcon
+                                            sx={{ fontSize: "18px" }}
+                                            size="small"
+                                          />
+                                        </IconButton>
+                                      )}
+                                    </Grid>
+                                  </Card>
+                                ))}
+                                {/* <Button
+                                  onClick={handleAddProduct}
+                                  sx={{
+                                    mb: 2,
+                                    float: "right",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    padding: "5px 5px",
+                                    backgroundColor: "#3f51b5",
+                                    color: "white",
+                                    "&:hover": {
+                                      backgroundColor: "#303f9f",
+                                    },
+                                  }}
+                                >
+                                  <AddIcon />
+                                 
+                                </Button> */}
+                              </Box>
+
+                              <Button
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                              >
+                                {/* <AddIcon /> */}
+                                Save
+                              </Button>
+                            </form>
+                          </Paper>
+                        </DialogContent>
+                      </Dialog>
+                      <Dialog
+                        sx={{
+                          "& .MuiDialog-paper": {
+                            borderRadius: "20px",
+                            padding: 2,
+                            position: "relative",
+                          },
+                        }}
+                        fullWidth
+                        open={openAssign === device._id}
+                        onClose={handleClose}
+                      >
+                        <DialogContent>
+                          <Paper sx={{ padding: 5 }}>
+                            <CloseIcon
+                              sx={{
+                                position: "absolute",
+                                top: 8,
+                                right: 8,
+                                cursor: "pointer",
+                              }}
+                              onClick={handleClose}
+                            />
+                            <Typography
+                              sx={{
+                                paddingBottom: 2,
+                                fontWeight: "700",
+                                color: "#2596be",
+                              }}
+                              variant="h5"
+                              gutterBottom
+                            >
+                              Assign
+                            </Typography>
+
+                            <form onSubmit={handleAssignProduct}>
+                              <FormControl
+                                variant="filled"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                              >
+                                <InputLabel>Add Employee</InputLabel>
+                                <Select
+                                  value={selectedAssignProduct}
+                                  onChange={handleChangeAssignProduct}
+                                  fullWidth
+                                  required
+                                >
+                                  {allNewEmployee.map((posList) => (
+                                    <MenuItem
+                                      key={posList._id}
+                                      value={posList._id}
+                                    >
+                                      {posList.employeeName}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </FormControl>
+                              <TextField
+                                label="Assign Date"
+                                InputLabelProps={{ shrink: true }}
+                                value={AssignDate}
+                                onChange={(e) => setAssignDate(e.target.value)}
+                                fullWidth
+                                type="date"
+                                required
+                                sx={{
+                                  mb: 2,
+                                  "&::placeholder": {
+                                    color: "#999",
+                                  },
+                                  "&:focus": {
+                                    borderColor: "#3f51b5",
+                                    outline: "none",
+                                  },
+                                }}
+                              />
+                              <Button
+                                type="submit"
+                                color="primary"
+                                variant="contained"
+                                aria-label="add Devices"
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                  mt: 2,
+                                }}
+                              >
+                                <AddIcon />
+                                Assign
+                              </Button>
+                            </form>
+                          </Paper>
+                        </DialogContent>
+                      </Dialog>
+                    </TableCell>
+                    {/* <TableCell>
+                      <IconButton>
+                      <EditIcon />
+                      </IconButton>
+                     
+                    </TableCell> */}
+
+                    <Dialog
+                      sx={{
+                        "& .MuiDialog-paper": {
+                          borderRadius: "20px",
+                          padding: 2,
+                        },
+                      }}
+                      fullWidth
+                      open={openAssignList === device._id}
+                      onClose={handleClose}
+                    >
+                      <DialogContent>
+                        <Paper sx={{ padding: 5 }}>
+                          <Typography
+                            sx={{
+                              paddingBottom: 2,
+                              fontWeight: "700",
+                              color: "#2596be",
+                            }}
+                            variant="h5"
+                            gutterBottom
+                          >
+                            Assign
+                          </Typography>
+                          <Table>
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>Employee Name</TableCell>
+                                <TableCell>Date Assigned</TableCell>
+                                <TableCell>Date Returned</TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {paginatedData.map(
+                                (empList, empIndex) =>
+                                  device?._id === empList?.productId?._id && (
+                                    <TableRow key={empIndex}>
+                                      <TableCell
+                                        onClick={() =>
+                                          handleReturn(empList._id)
+                                        }
+                                      >
+                                        <Dialog
+                                          sx={{
+                                            "& .MuiDialog-paper": {
+                                              borderRadius: "20px",
+                                              padding: 2,
+                                            },
+                                          }}
+                                          fullWidth
+                                          open={editReturn == empList._id}
+                                          onClose={handleClose}
+                                        >
+                                          <DialogContent>
+                                            <Paper sx={{ padding: 5 }}>
+                                              <Typography
+                                                sx={{
+                                                  paddingBottom: 2,
+                                                  fontWeight: "700",
+                                                  color: "#2596be",
+                                                }}
+                                                variant="h5"
+                                                gutterBottom
+                                              >
+                                                Return Product
+                                              </Typography>
+
+                                              <form
+                                                onSubmit={handleReturnProduct}
+                                              >
+                                                <TextField
+                                                  label="Return Date"
+                                                  InputLabelProps={{
+                                                    shrink: true,
+                                                  }}
+                                                  value={returnDate}
+                                                  onChange={(e) =>
+                                                    setReturnDate(
+                                                      e.target.value
+                                                    )
+                                                  }
+                                                  fullWidth
+                                                  type="date"
+                                                  required
+                                                  sx={{
+                                                    mb: 2,
+                                                    "&::placeholder": {
+                                                      color: "#999",
+                                                    },
+                                                    "&:focus": {
+                                                      borderColor: "#3f51b5",
+                                                      outline: "none",
+                                                    },
+                                                  }}
+                                                />
+                                                <Button
+                                                  type="submit"
+                                                  color="primary"
+                                                  variant="contained"
+                                                  aria-label="add Devices"
+                                                  sx={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                    mt: 2,
+                                                  }}
+                                                >
+                                                  <AddIcon />
+                                                  Add
+                                                </Button>
+                                              </form>
+                                            </Paper>
+                                          </DialogContent>
+                                        </Dialog>
+                                        {empList.employeeId.employeeName}
+                                      </TableCell>
+                                      <TableCell>
+                                        {empList?.assignedDate?.split("T")[0]}
+                                      </TableCell>
+                                      <TableCell>
+                                        {empList.returnDate?.split("T")[0]}
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                              )}
+                            </TableBody>
+                          </Table>
+                        </Paper>
+                      </DialogContent>
+                    </Dialog>
+                  </TableRow>
+                ))}
+            </TableBody>
+          </Table>
+          <TablePagination
+            rowsPerPageOptions={[10, 15, 25]}
+            component="div"
+            count={allNewProduct.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "flex-end",
+              },
+              "& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows":
+                {
+                  fontSize: "0.875rem",
+                },
+              "& .MuiTablePagination-select": {
+                fontSize: "0.875rem",
+              },
+            }}
+          />
+        </Paper>
+      </Box>
     </>
   );
 };
 
 export default Product;
-

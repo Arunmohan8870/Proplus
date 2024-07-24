@@ -7,10 +7,10 @@ export const dashboardApi = api.injectEndpoints({
             query: (query) => ({
                 url: "/subdepartment/add_subdeparment",
                 method: "POST",
-                body:query
+                body: query
             }),
 
-            invalidatesTags:["subDepartment"],
+            invalidatesTags: ["subDepartment"],
         }),
 
         createProduct: builder.mutation({
@@ -20,17 +20,17 @@ export const dashboardApi = api.injectEndpoints({
                 body: query
             }),
 
-            invalidatesTags:["createProduct"],
+            invalidatesTags: ["createProduct"],
         }),
 
         addPosition: builder.mutation({
             query: (query) => ({
                 url: "/position/add_position",
                 method: "POST",
-                body:query
+                body: query
             }),
 
-            invalidatesTags:["addPosition"],
+            invalidatesTags: ["addPosition"],
         }),
 
         addProduct: builder.mutation({
@@ -41,18 +41,18 @@ export const dashboardApi = api.injectEndpoints({
 
             }),
 
-            invalidatesTags:["addProduct"],
+            invalidatesTags: ["addProduct"],
         }),
         employeeLogin: builder.mutation({
-          query: (query) => ({
-              url: "/employee/login",
-              method: "POST",
-              body: query
+            query: (query) => ({
+                url: "/employee/login",
+                method: "POST",
+                body: query
 
-          }),
+            }),
 
-          // invalidatesTags:["addProduct"],
-      }),
+            // invalidatesTags:["addProduct"],
+        }),
 
         addCategory: builder.mutation({
             query: (query) => ({
@@ -61,17 +61,17 @@ export const dashboardApi = api.injectEndpoints({
                 body: query
             }),
 
-            invalidatesTags:["addcategory"],
+            invalidatesTags: ["addcategory"],
         }),
 
         addDepartment: builder.mutation({
             query: (values) => ({
                 url: "/department/add_deparment",
                 method: "POST",
-                body:values
+                body: values
             }),
 
-            invalidatesTags:["addDepartment"],
+            invalidatesTags: ["addDepartment"],
         }),
 
         addEmployee: builder.mutation({
@@ -81,91 +81,127 @@ export const dashboardApi = api.injectEndpoints({
                 body: query
             }),
 
-            invalidatesTags:["addEmployee"],
+            invalidatesTags: ["addEmployee"],
         }),
 
         allDepartment: builder.query({
             query: () => ({
-              url: "/department/all_deparment",
-              method: "GET",
+                url: "/department/all_deparment",
+                method: "GET",
             }),
             providesTags: ["allDepartment"],
-          }),
+        }),
 
-          allProduct: builder.query({
+        allProduct: builder.query({
             query: (query) => ({
-              url: `/product/all_product?search=${query}`,
-              method: "GET",
+                url: `/product/all_product?search=${query}`,
+                method: "GET",
             }),
             providesTags: ["allProduct"],
-          }),
+        }),
 
-          allCategory: builder.query({
+        allCategory: builder.query({
             query: () => ({
-              url: "/category/all_category",
-              method: "GET",
+                url: "/category/all_category",
+                method: "GET",
             }),
             providesTags: ["allCategory"],
-          }),
+        }),
 
-          allEmployee: builder.query({
+        allEmployee: builder.query({
             query: (query) => ({
-              url: `/employee/all_employee?search=${query}`,
-              method: "GET",
+                url: `/employee/all_employee?search=${query}`,
+                method: "GET",
             }),
             providesTags: ["allEmployee"],
-          }),
+        }),
 
-          allPosition: builder.query({
+        allPosition: builder.query({
             query: () => ({
-              url: "/position/all_position",
-              method: "GET",
+                url: "/position/all_position",
+                method: "GET",
             }),
             providesTags: ["allPosition"],
-          }),
+        }),
 
-          allSubDepartment: builder.query({
+        allSubDepartment: builder.query({
             query: () => ({
-              url: "/subdepartment/all_subdeparment",
-              method: "GET",
+                url: "/subdepartment/all_subdeparment",
+                method: "GET",
             }),
             providesTags: ["allSubDepartment"],
-          }),
+        }),
 
-          allProductAssign: builder.query({
+        allProductAssign: builder.query({
             query: () => ({
-              url: "/product_assign/all_product_assign",
-              method: "GET",
+                url: "/product_assign/all_product_assign",
+                method: "GET",
             }),
             providesTags: ["allProductAssign"],
-          }),
+        }),
 
-          editEmployee: builder.mutation({
-            query: ({value,selectedId}) => ({
-              url: `/employee/edit_employee/${selectedId}`,
-              method: 'PUT',
-              body: value
+        editEmployee: builder.mutation({
+            query: ({ value, selectedId }) => ({
+                url: `/employee/edit_employee/${selectedId}`,
+                method: 'PUT',
+                body: value
             }),
-          }),
+        }),
 
-          editProductAssign: builder.mutation({
-            query: ({value,produrtReturnId}) => ({
-              url: `/product_assign/edit_product_assign/${produrtReturnId}`,
-              method: 'PUT',
-              body: value
+        editProductAssign: builder.mutation({
+            query: ({ value, produrtReturnId }) => ({
+                url: `/product_assign/edit_product_assign/${produrtReturnId}`,
+                method: 'PUT',
+                body: value
             }),
-          }),
+        }),
 
+        editProduct: builder.mutation({
+            query: ({ value, productEditId }) => ({
+                url: `/product/edit_product/${productEditId}`,
+                method: 'PUT',
+                body: value
+            }),
+        }),
+        deleteProduct: builder.mutation({
+          query: (id) => ({
+              url: `/product/enable_disable_product/${id}`,
+              method: 'PUT',
+              // body: value
+          }),
+      }),
+      deleteEmployee: builder.mutation({
+        query: (id) => ({
+            url: `/employee/enable_disable_employee/${id}`,
+            method: 'PUT',
+           
+        }),
+    }),
 
 
     }),
 });
 
-export const { useCreateSubDepartmentMutation, useCreateProductMutation, useAddPositionMutation, useAddProductMutation, 
-useAddCategoryMutation, useAddDepartmentMutation, useAddEmployeeMutation, useAllDepartmentQuery, useAllProductQuery,
-useAllCategoryQuery, useAllEmployeeQuery, useAllPositionQuery, useAllSubDepartmentQuery, useAllProductAssignQuery,
-useEditEmployeeMutation, useEditProductAssignMutation,useEmployeeLoginMutation
+export const {
+    useCreateSubDepartmentMutation,
+    useCreateProductMutation,
+    useAddPositionMutation,
+    useAddProductMutation,
+    useAddCategoryMutation,
+    useAddDepartmentMutation,
+    useAddEmployeeMutation,
+    useAllDepartmentQuery,
+    useAllProductQuery,
+    useAllCategoryQuery,
+    useAllEmployeeQuery,
+    useAllPositionQuery,
+    useAllSubDepartmentQuery,
+    useAllProductAssignQuery,
+    useEditEmployeeMutation,
+    useEditProductAssignMutation,
+    useEmployeeLoginMutation,
+    useEditProductMutation,
+    useDeleteProductMutation,
+    useDeleteEmployeeMutation
 
 } = dashboardApi;
-
-

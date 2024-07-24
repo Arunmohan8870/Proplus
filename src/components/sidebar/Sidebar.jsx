@@ -15,6 +15,9 @@ import {
 const Sidebar = () => {
   return (
     <>
+    <div>
+
+   
       <div className="logo" style={{ textAlign: "center" }}>
         {/* <FaLeaf /> */}
         {/* <img src="https://propluslogics.com/support/uploads/company/fc764ba52ad25285b7e3733ecb2dbc31.png" alt="logo" style={{ width: "120%", background:'black' }} /> */}
@@ -63,6 +66,7 @@ const Sidebar = () => {
           Logout
         </Menu.Item>  */}
       </Menu>
+      </div>
     </>
   );
 };

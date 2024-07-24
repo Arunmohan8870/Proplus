@@ -20,6 +20,7 @@ import Device from "./pages/device/index";
 import Product from "./pages/product/index";
 import Login from "./pages/login/index";
 import { useEmployeeLoginMutation } from "./features/api/dashboard/dashboardApi";
+import NotFound from "./pages/404/index";
 
 const { Sider, Content } = Layout;
 
@@ -53,7 +54,8 @@ const App = () => {
       <Provider store={store}>
         <Layout style={{ minHeight: "100vh" }}>
           {isLoggedIn && (
-            <Sider
+          
+            <Sider 
               theme="light"
               trigger={null}
               collapsible
@@ -61,9 +63,10 @@ const App = () => {
               className="sider"
               width={280}
               collapsedWidth={isMobile ? 0 : 80}
+              
             >
               <Sidebar />
-              <div style={{ position: "absolute", bottom: 20, width: "100%" }}>
+              <div style={{ position: "fixed", bottom: 20, width: "100%" }}>
                 <Button
                   type="text"
                   icon={
@@ -78,7 +81,7 @@ const App = () => {
                   variant="contained"
                   onClick={handleLogout}
                   style={{
-                    marginLeft: "3%",
+                    marginLeft: "1%",
                     // backgroundColor: "#8A1E3A",
                     // color: "#fff",
                     padding: "8px 16px",
@@ -97,6 +100,7 @@ const App = () => {
                   }}
                 >
                   <LogoutIcon fontSize="10"/>
+                  
                   Logout
                 </Button>
               </div>
@@ -127,7 +131,7 @@ const App = () => {
                   }
                 />
                 {/* <Route path="/employee" element={<ProtectedRoute><Employee /></ProtectedRoute>} /> */}
-                {/* <Route path="/attendance" element={<ProtectedRoute><Attendance /></ProtectedRoute>} /> */}
+                <Route path="*" element={<NotFound />} />
                 {/* <Route path="/device" element={<ProtectedRoute><Device /></ProtectedRoute>} /> */}
               </Routes>
             </Content>
