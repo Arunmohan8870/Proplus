@@ -7,6 +7,5 @@ export const api = createApi({
     baseUrl: `${all.baseurl}`,
   }),
   tagTypes: ["subDepartment", "createProduct", "addPosition", "addProduct", "addcategory", "addDepartment"],
-
   endpoints: (builder) => ({}),
-});
+})

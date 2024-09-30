@@ -5,12 +5,11 @@ import { api } from "../features/api/api";
 
 export const store = configureStore({
   reducer: {
-      
        [api.reducerPath]: api.reducer,
-    
   },
     middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat( api.middleware ),
   
 });
+
 

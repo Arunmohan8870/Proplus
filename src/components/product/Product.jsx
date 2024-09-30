@@ -829,9 +829,10 @@ const Product = () => {
                       >
                         Assign
                       </Button>
-                      <IconButton  onClick={() => handleOpenEdit(device)}>
+                      
+                      {/* <IconButton  onClick={() => handleOpenEdit(device)}>
                         <EditIcon />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton onClick={() => handleOpenDelete(device?._id)}>
                         <DeleteIcon />
                       </IconButton>

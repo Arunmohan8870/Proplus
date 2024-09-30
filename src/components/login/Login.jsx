@@ -15,6 +15,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEmployeeLoginMutation } from "../../features/api/dashboard/dashboardApi";
 import { useNavigate } from "react-router-dom";
+import { Controller } from "react-hook-form";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
 const Login = ({ setIsLoggedIn }) => {
   const [email, setEmail] = useState("");
@@ -40,6 +42,16 @@ const Login = ({ setIsLoggedIn }) => {
         console.error(error.data.message);
       }
     }
+  };
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
+  const removeFile = (index) => {
+    setSelectedFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   return (
@@ -109,14 +121,24 @@ const Login = ({ setIsLoggedIn }) => {
                   sx: {
                     fontSize: "14px",
                     // textAlign:'center',
-                    display:'flex',
-                    alignItems:'center',
+                    display: "flex",
+                    alignItems: "center",
                   },
                 }}
                 sx={{
                   mb: 2,
                 }}
               />
+              {/* <TextField
+                id="outlined-basic"
+                label="Outlined"
+                variant="outlined"
+                type="file"
+                inputProps={{
+                  multiple: true,
+                }}
+              /> */}
+
               <TextField
                 fullWidth
                 size="small"
@@ -136,15 +158,17 @@ const Login = ({ setIsLoggedIn }) => {
                 InputLabelProps={{
                   sx: {
                     fontSize: "14px",
-                    textAlign:'center',
-                    display:'flex',
-                    alignItems:'center',
+                    textAlign: "center",
+                    display: "flex",
+                    alignItems: "center",
                   },
                 }}
                 sx={{
                   mb: 3,
                 }}
               />
+   
+
               <Button
                 type="submit"
                 fullWidth
@@ -168,6 +192,71 @@ const Login = ({ setIsLoggedIn }) => {
             </form>
           </Card>
         </Box>
+                   <Card sx={{ textAlign: "center", pt: 3, pb: 2 }} elevation={5}>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Typography className="text-2xl font-semibold leading-tight mb-10">
+          Upload
+        </Typography>
+        {/* <Controller
+          name="image"
+          control={control}
+          render={({ field: { onChange } }) => ( */}
+            <>
+              <input
+                multiple
+                style={{ display: "none" }}
+                id="image-upload"
+                type="file"
+                onChange={(e) => {
+                  handleFileChange(e);
+                  onChange(e.target.files);
+                }}
+              />
+            </>
+          {/* // )} */}
+        {/* /> */}
+      </Box>
+      <Button
+        className="mt-20 mb-20"
+        variant="contained"
+        component="span"
+        color="primary"
+        // startIcon={<CloudUploadIcon />}
+        sx={{ justifyContent: "center" }}
+        onClick={() => document.getElementById("image-upload").click()}
+      >
+        Upload
+      </Button>
+      {selectedFiles.length > 0 && (
+        <Box>
+          <Typography className="text-1xl font-semibold leading-tight mb-10">
+            Selected Files
+          </Typography>
+          <ul>
+            {selectedFiles.map((file, index) => (
+              <li key={index}>
+                {file.name}
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => removeFile(index)}
+                  sx={{ ml: 2 }}
+                >
+                  Remove
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </Box>
+      )}
+    </Card>
       </Container>
     </>
   );

@@ -29,7 +29,8 @@ import {
   Typography,
 } from "@mui/material";
 // import PhoneIcon from '@mui/icons-material/Phone';
-
+import bg from '../../assets/bg.jpg'
+import bg1 from '../../assets/bg1.jpg'
 import DeleteIcon from "@mui/icons-material/Delete";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -525,22 +526,6 @@ const Device = () => {
 
     const res = await allEditEmployee({ value: editData, selectedId })
       .unwrap()
-
-      // axios
-      //   .put(
-      //     `http://192.168.1.141:8080/api/v1/employee/edit_employee/${selectedId}`,
-      //     {
-      //       employeeName: name,
-      //       departmentId: selectedDepartment,
-      //       subDepartmentId: selectedSubDepartment,
-      //       positionId: selectedPosition,
-      //       employeeEmail: email,
-      //       employeeDob: dateOf,
-      //       joiningDate: dateOfJoin,
-      //       phone: number,
-      //       proplusId: proPlusID,
-      //     }
-      //   )
 
       .then((response) => {
         console.log(response);
@@ -1563,15 +1548,32 @@ const Device = () => {
       </Box>
       <Box>
         <Box>
-          {allNewEmployee == 0 && (
-            <Typography
-              sx={{ paddingBottom: 2, fontWeight: "700", color: "#2596be" }}
-              variant="h5"
-              gutterBottom
-            >
-              {`Not found`}
-            </Typography>
-          )}
+        {allNewEmployee == 0 && (
+          <>
+         
+          {/* <Box component="img" src="https://e7.pngegg.com/pngimages/923/254/png-clipart-web-page-http-404-design-angle-text.png" alt="404 Error" mb={1} width="60%" maxWidth={400} /> */}
+  <Typography
+    sx={{
+      paddingBottom: 2,
+      fontWeight: 700,
+      color: "red",
+      textAlign: "center",
+      display:'flex',
+      justifyContent:'center',
+      alignItems:'center',
+      height: '50vh',
+      // backgroundColor: "#f0f0f0",
+      borderRadius: 2,
+      padding: 2
+    }}
+    variant="h5"
+    gutterBottom
+  >
+    Not found
+  </Typography>
+  </>
+)}
+
         </Box>
         <Grid sx={{ padding: 3 }} container spacing={5}>
           {allNewEmployee?.map((profile, index) => (
@@ -1748,7 +1750,7 @@ const Device = () => {
                             // https://images.pexels.com/photos/1424246/pexels-photo-1424246.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load
                             // https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1
                             //
-                            'url("https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg")',
+                            `url('${bg}')`,
                           backgroundSize: "cover",
 
                           backgroundPosition: "center",
